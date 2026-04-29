@@ -1,0 +1,2 @@
+pyinstaller --noconsole --onefile --icon=logo.ico -n "drawing board" main.py
+pyinstaller --noconsole --onefile --add-data "dist/drawing board.exe;." -n "drawing board installer" installer.py
