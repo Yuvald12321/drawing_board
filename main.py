@@ -22,7 +22,6 @@ class DrawingApp(TkClass):
 
         self.image = Image.new("RGB", (self.WIDTH, self.HEIGHT), self.bg_color)
         self.draw_context = ImageDraw.Draw(self.image)
-        xt = ImageDraw.Draw(self.image)
 
         self.display_label = tk.Label(self)
         self.display_label.pack()
