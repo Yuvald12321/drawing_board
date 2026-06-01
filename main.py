@@ -22,13 +22,17 @@ class DrawingApp(TkClass):
 
         self.image = Image.new("RGB", (self.WIDTH, self.HEIGHT), self.bg_color)
         self.draw_context = ImageDraw.Draw(self.image)
-        xt = ImageDraw.Draw(self.image)
 
         self.display_label = tk.Label(self)
-        self.display_label.pack()
+        self.display_label.pack(side="left", fill="both", expand=True)
 
         self.display_label.bind("<Button-1>", self.start_drawing)
         self.display_label.bind("<B1-Motion>", self.draw)
+
+        self.line_width_slider = tk.Scale(self, from_=1, to=50)
+        self.line_width_slider.set(self.line_width)
+        self.line_width_slider.config(cursor="sb_v_double_arrow")
+        self.line_width_slider.pack(side="right", fill="both", expand=True)
 
         self.setup_menu()
         self.update_display()
@@ -124,11 +128,9 @@ class DrawingApp(TkClass):
     def draw(self, event):
         if self.current_tool in ("pen", "eraser") and self.last_x is not None:
             color = self.bg_color if self.current_tool == "eraser" else self.current_color
-            width = self.line_width * 3 if self.current_tool == "eraser" else self.line_width
-            self.draw_context.line(
-                [(self.last_x, self.last_y), (event.x, event.y)],
-                joint="round", fill=color, width=width
-            )
+            width = self.line_width_slider.get() * 3 if self.current_tool == "eraser" else self.line_width_slider.get()
+            self.draw_context.line([(self.last_x, self.last_y), (event.x, event.y)], joint="round", fill=color, width=width)
+            self.draw_context.circle([event.x, event.y], radius=width / 2, fill=color)
             self.update_display()
             self.last_x, self.last_y = event.x, event.y
 
@@ -162,7 +164,7 @@ class DrawingApp(TkClass):
             "eraser": "dotbox",
             "color_picker": "tcross"
         }
-        self.config(cursor=cursors.get(tool_name, "arrow"))
+        self.display_label.config(cursor=cursors.get(tool_name, "arrow"))
 
     def resize_board(self):
         new_width = simpledialog.askinteger("Resize", "Enter new width:", initialvalue=400)
@@ -181,6 +183,8 @@ class DrawingApp(TkClass):
 
 
 if __name__ == "__main__":
-    windll.shcore.SetProcessDpiAwareness(1)
-    app = DrawingApp()
-    app.mainloop()
+    try:
+        windll.shcore.SetProcessDpiAwareness(1)
+    finally:
+        app = DrawingApp()
+        app.mainloop()
