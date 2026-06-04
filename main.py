@@ -29,7 +29,7 @@ class DrawingApp(TkClass):
         self.display_label.bind("<Button-1>", self.start_drawing)
         self.display_label.bind("<B1-Motion>", self.draw)
 
-        self.line_width_slider = tk.Scale(self, from_=1, to=50)
+        self.line_width_slider = tk.Scale(self, from_=50, to=1)
         self.line_width_slider.set(self.line_width)
         self.line_width_slider.config(cursor="sb_v_double_arrow")
         self.line_width_slider.pack(side="right", fill="both", expand=True)
