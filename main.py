@@ -4,6 +4,7 @@ from tkinter import colorchooser, filedialog, simpledialog, messagebox
 from ctypes import windll
 from PIL import Image, ImageDraw, ImageTk
 from tkinterdnd2 import DND_FILES, TkinterDnD
+
 TkClass = TkinterDnD.Tk
 
 
