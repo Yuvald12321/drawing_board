@@ -131,14 +131,14 @@ class DrawingApp(TkClass):
             color = self.bg_color if self.current_tool == "eraser" else self.current_color
             width = self.line_width_slider.get() * 3 if self.current_tool == "eraser" else self.line_width_slider.get()
             self.draw_context.line([(self.last_x, self.last_y), (event.x, event.y)], joint="round", fill=color, width=width)
-            self.draw_context.circle([event.x, event.y], radius=width // 2, fill=color)
+            self.draw_context.circle([event.x, event.y], radius = (width - 1) // 2, fill=color)
             self.update_display()
             self.last_x, self.last_y = event.x, event.y
 
     def pick_color(self, x, y):
         try:
             rgb = self.image.getpixel((x, y))
-            self.current_color = '#{:02x}{:02x}{:02x}'.format(rgb[0], rgb[1], rgb[2])
+            self.current_color = "#{:02x}{:02x}{:02x}".format(rgb[0], rgb[1], rgb[2])
             self.set_tool("pen")
         except IndexError:
             pass
