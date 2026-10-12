@@ -19,9 +19,10 @@ class DrawingApp(TkClass):
         self.current_tool = "pen"
         self.last_x = None
         self.last_y = None
-        self.WIDTH, self.HEIGHT = 400, 400
+        self.default_size = 400
+        self.WIDTH, self.HEIGHT = self.default_size, self.default_size
 
-        self.image = Image.new("RGB", (self.WIDTH, self.HEIGHT), self.bg_color)
+        self.image = Image.new("RGB", (self.default_size, self.default_size), self.bg_color)
         self.draw_context = ImageDraw.Draw(self.image)
 
         self.display_label = tk.Label(self)
@@ -39,9 +40,9 @@ class DrawingApp(TkClass):
         self.update_display()
         self.set_tool("pen")
 
-        if hasattr(self, 'drop_target_register'):
+        if hasattr(self, "drop_target_register"):
             self.drop_target_register(DND_FILES)
-            self.dnd_bind('<<Drop>>', self.handle_drop)
+            self.dnd_bind("<<Drop>>", self.handle_drop)
 
         if len(sys.argv) > 1:
             self.load_image(sys.argv[1])
@@ -62,7 +63,9 @@ class DrawingApp(TkClass):
         menu_bar.add_cascade(label="Tools", menu=tools_menu)
         for tool in ["pen", "paint_bucket", "color_picker", "eraser"]:
             label_name = tool.replace("_", " ").title()
-            tools_menu.add_command(label=label_name, command=lambda t=tool: self.set_tool(t))
+            tools_menu.add_command(
+                label=label_name, command=lambda t=tool: self.set_tool(t)
+            )
 
         menu_bar.add_command(label="Color", command=self.set_color)
 
@@ -72,7 +75,7 @@ class DrawingApp(TkClass):
 
     def load_image(self, path):
         try:
-            if path.startswith('{') and path.endswith('}'):
+            if path.startswith("{") and path.endswith("}"):
                 path = path[1:-1]
             img = Image.open(path).convert("RGB")
             self.image = img
@@ -93,15 +96,17 @@ class DrawingApp(TkClass):
                 ("Image File", "*.jpeg"),
                 ("Image File", "*.webp"),
                 ("Image File", "*.bmp"),
-                ("All Files", "*.*")
-            ]
+                ("All Files", "*.*"),
+            ],
         )
         if path:
             self.load_image(path)
 
     def export_image(self):
         path = filedialog.asksaveasfilename(
-            initialfile=simpledialog.askstring("Export", "Enter name", initialvalue="drawing"),
+            initialfile=simpledialog.askstring(
+                "Export", "Enter name", initialvalue="drawing"
+            ),
             defaultextension=".png",
             filetypes=[
                 ("Image File", "*.png"),
@@ -109,8 +114,8 @@ class DrawingApp(TkClass):
                 ("Image File", "*.jpeg"),
                 ("Image File", "*.webp"),
                 ("Image File", "*.bmp"),
-                ("All Files", "*.*")
-            ]
+                ("All Files", "*.*"),
+            ],
         )
         if path:
             try:
@@ -128,10 +133,14 @@ class DrawingApp(TkClass):
 
     def draw(self, event):
         if self.current_tool in ("pen", "eraser") and self.last_x is not None:
-            color = self.bg_color if self.current_tool == "eraser" else self.current_color
-            width = self.line_width_slider.get() * 3 if self.current_tool == "eraser" else self.line_width_slider.get()
+            color = (self.bg_color if self.current_tool == "eraser" else self.current_color)
+            width = (
+                self.line_width_slider.get() * 3
+                if self.current_tool == "eraser"
+                else self.line_width_slider.get()
+            )
             self.draw_context.line([(self.last_x, self.last_y), (event.x, event.y)], joint="round", fill=color, width=width)
-            self.draw_context.circle([event.x, event.y], radius = (width - 1) // 2, fill=color)
+            self.draw_context.circle([event.x, event.y], radius=(width - 1) // 2, fill=color)
             self.update_display()
             self.last_x, self.last_y = event.x, event.y
 
@@ -144,7 +153,7 @@ class DrawingApp(TkClass):
             pass
 
     def flood_fill(self, x, y):
-        fill_rgb = tuple(int(self.current_color.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4))
+        fill_rgb = tuple(int(self.current_color.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))
         try:
             if self.image.getpixel((x, y)) != fill_rgb:
                 ImageDraw.floodfill(self.image, (x, y), fill_rgb, thresh=0)
@@ -163,7 +172,7 @@ class DrawingApp(TkClass):
             "pen": "pencil",
             "paint_bucket": "crosshair",
             "eraser": "dotbox",
-            "color_picker": "tcross"
+            "color_picker": "tcross",
         }
         self.display_label.config(cursor=cursors.get(tool_name, "arrow"))
 
@@ -178,7 +187,7 @@ class DrawingApp(TkClass):
             self.update_display()
 
     def reset_board(self):
-        self.image = Image.new("RGB", (self.WIDTH, self.HEIGHT), self.bg_color)
+        self.image = Image.new("RGB", (self.default_size, self.default_size), self.bg_color)
         self.draw_context = ImageDraw.Draw(self.image)
         self.update_display()
 
